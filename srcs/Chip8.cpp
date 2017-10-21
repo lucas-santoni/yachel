@@ -1,8 +1,9 @@
 #include <fstream>
 
-#include "../includes/Chip8.hpp"
+#include "Yachel.hpp"
 
-// Basic constructor
+// Create the screen
+// Load the fontset
 Yachel::Chip8::Chip8(void) :
   _vram(Specs::WINDOW_WIDTH, Specs::WINDOW_HEIGHT) {
   _loadFontset();
@@ -15,7 +16,7 @@ void Yachel::Chip8::load(const std::string& romPath) {
 
   rom.open(romPath, std::ios::binary);
   if (!rom.good())
-    return;
+    throw Yachel::Exceptions::LoaderError("Could not open file.", romPath);
 
   rom.read(reinterpret_cast<char *>(_ram.data() +
         Specs::ROM_OFFSET), Specs::MEMORY_SIZE);
