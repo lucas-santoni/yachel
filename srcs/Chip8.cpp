@@ -41,6 +41,7 @@ void Yachel::Chip8::setTimeout(uint32_t timeout) {
 // Update timers
 // Does not do anything if paused
 // TODO: Cleaner error handling
+#include <iostream>
 void Yachel::Chip8::cycle(void) {
   if (paused())
     return;
@@ -53,7 +54,11 @@ void Yachel::Chip8::cycle(void) {
 
   for (auto& op : _opcodes)
     if ((_currentOpcode & op.mask) == op.key) {
-      op.f(this);
+      try {
+        op.f(this);
+      } catch (...) {
+        std::cout << "Exception catched !\n";
+      }
       break;
     }
 }
@@ -111,21 +116,21 @@ bool Yachel::Chip8::shouldRedraw(void) const {
 // Keep an eye on the first pressed key
 // in case there is more than one per tick
 // TODO: Error handling
-void Yachel::Chip8::keyPressed(uint8_t id) {
+void Yachel::Chip8::keyPressed(int32_t id) {
   _keys[id] = true;
 
-  if (_keyPressed == Yachel::FAILURE)
+  if (_keyPressed != Yachel::FAILURE)
     _keyPressed = id;
 }
 
 // Recieve a key released event
 // TODO: Error handling
-void Yachel::Chip8::keyReleased(uint8_t id) {
+void Yachel::Chip8::keyReleased(int32_t id) {
   _keys[id] = false;
 }
 
 // Put the font bytes at the right place in memory
-constexpr void Yachel::Chip8::_loadFontset(void) {
+void Yachel::Chip8::_loadFontset(void) {
   constexpr std::array<uint8_t, Specs::FONTSET_SIZE> fontSet = {{
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1

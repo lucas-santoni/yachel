@@ -30,11 +30,11 @@ namespace Yachel {
       void resume(void);
       const std::vector<bool>& getScreen(void) const;
       bool shouldRedraw(void) const;
-      void keyPressed(uint8_t id);
-      void keyReleased(uint8_t id);
+      void keyPressed(int32_t id);
+      void keyReleased(int32_t id);
 
     private:
-      constexpr void _loadFontset(void);
+      void _loadFontset(void);
       void _updateOpcodeArguments(void);
 
     private:
