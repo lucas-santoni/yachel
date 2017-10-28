@@ -1,6 +1,7 @@
 #include <fstream>
 
-#include "Yachel.hpp"
+#include "../includes/Chip8.hpp"
+#include "../includes/Exceptions.hpp"
 
 // Create the screen
 // Load the fontset
@@ -10,10 +11,11 @@ Yachel::Chip8::Chip8(void) :
 }
 
 // Load a ROM into emulator
-// TODO: Better error handling
+// TODO: Check if romPath is actually copied
 void Yachel::Chip8::load(const std::string& romPath) {
   std::ifstream rom;
 
+  _romPath = romPath;
   rom.open(romPath, std::ios::binary);
   if (!rom.good())
     throw Yachel::Exceptions::LoaderError("Could not open file.", romPath);
@@ -41,24 +43,23 @@ void Yachel::Chip8::setTimeout(uint32_t timeout) {
 // Update timers
 // Does not do anything if paused
 // TODO: Cleaner error handling
-#include <iostream>
 void Yachel::Chip8::cycle(void) {
   if (paused())
     return;
 
   _vram.handleMeta();
 
+  if (_pc >= _ram.size())
+    throw Yachel::Exceptions::RuntimeError("PC points to"
+        " invalid location.", *this);
   _currentOpcode = _ram[_pc] << 8 | _ram[_pc + 1];
+
   _updateOpcodeArguments();
   _pc += 2;
 
   for (auto& op : _opcodes)
     if ((_currentOpcode & op.mask) == op.key) {
-      try {
-        op.f(this);
-      } catch (...) {
-        std::cout << "Exception catched !\n";
-      }
+      op.f(this);
       break;
     }
 }
@@ -73,8 +74,12 @@ void Yachel::Chip8::cycle(void) {
 void Yachel::Chip8::tick(void) {
   _redraw = false;
 
-  for (uint32_t i = 0; i < _clock ; ++i)
-    cycle();
+  try {
+    for (uint32_t i = 0; i < _clock ; ++i)
+      cycle();
+  } catch (const Yachel::Exceptions::RuntimeError& e) {
+    throw;
+  }
 
   if (_delayTimer > 0)
     --_delayTimer;

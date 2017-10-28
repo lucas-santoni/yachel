@@ -1,9 +1,9 @@
-#include "Yachel.hpp"
+#include "../includes/Exceptions.hpp"
 
 // LoaderError
 namespace Yachel {
   namespace Exceptions {
-    // Takes an error message and the current offset
+    // Takes an error message and the loaded ROM path
     LoaderError::LoaderError(const std::string& error,
         const std::string& romPath) :
       _errorMessage(error),
@@ -14,7 +14,7 @@ namespace Yachel {
       return _errorMessage.data();
     }
 
-    // Return the path of the ROm which was being loaded
+    // Return the path of the Rom which was being loaded
     const std::string& LoaderError::romPath(void) const {
       return _romPath;
     }
@@ -25,9 +25,10 @@ namespace Yachel {
 namespace Yachel {
   namespace Exceptions {
     // Takes an error message and the current offset
-    RuntimeError::RuntimeError(const std::string& error, int32_t offset) :
+    RuntimeError::RuntimeError(const std::string& error,
+        const Yachel::Chip8& running) :
       _errorMessage(error) {
-        _offset = offset;
+        _offset = running._pc;
       }
 
     // Return error message
@@ -36,7 +37,7 @@ namespace Yachel {
     }
 
     // Get the offset on which that happened
-    int32_t RuntimeError::offset(void) const {
+    uint32_t RuntimeError::offset(void) const {
       return _offset;
     }
   }

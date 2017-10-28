@@ -3,9 +3,9 @@
 #include <exception>
 #include <string>
 
-#include "Status.hpp"
+#include "Chip8.hpp"
 
-// Runtime error
+// Errors associated to Yachel
 namespace Yachel {
   namespace Exceptions {
     // Something happened when the emulator was loading
@@ -25,13 +25,13 @@ namespace Yachel {
     class RuntimeError : public std::exception {
       public:
         explicit RuntimeError(const std::string& error,
-            int32_t offset = Yachel::Status::FAILURE);
+            const Yachel::Chip8& running);
         virtual const char *what(void) const throw();
-        int32_t offset(void) const;
+        uint32_t offset(void) const;
 
       private:
         const std::string _errorMessage;
-        int32_t _offset;
+        uint32_t _offset;
     };
   }
 }

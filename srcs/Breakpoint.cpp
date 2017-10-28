@@ -1,4 +1,4 @@
-#include "Yachel.hpp"
+#include "../includes/Breakpoint.hpp"
 
 // Build a breakpoint from address
 // Eventually set default activity
@@ -47,6 +47,7 @@ void Yachel::Breakpoint::reset(void) {
   arm();
 }
 
+// Get the address this breakpoint is on
 uint16_t Yachel::Breakpoint::isBreakingOn(void) const {
   return _addr;
 }

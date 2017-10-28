@@ -5,15 +5,19 @@
 #include <stack>
 
 #include "Status.hpp"
-#include "Specs.hpp"
 #include "Opcode.hpp"
 #include "OpcodeArguments.hpp"
 #include "Screen.hpp"
+#include "RuntimeError.hpp"
 
 // A chip8 device
+// This class has two friends : a debugger and
+// a runtime descriptor has both need to directly
+// pick stuff from the internals
 namespace Yachel {
   class Chip8 {
     friend class Debugger;
+    friend class Yachel::Exceptions::RuntimeError;
 
     public:
       explicit Chip8(void);
@@ -45,6 +49,7 @@ namespace Yachel {
       Screen _vram;
 
     private:
+      std::string _romPath;
       std::array<uint8_t, Specs::MEMORY_SIZE> _ram = {};
       std::array<uint8_t, Specs::NUMBER_OF_REGISTERS> _registers = {};
       std::array<bool, Specs::NUMBER_OF_KEYS> _keys = {};
